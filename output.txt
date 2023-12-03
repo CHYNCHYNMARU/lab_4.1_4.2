@@ -1,0 +1,267 @@
+postgres=# \c shatalov4384
+Вы подключены к базе данных "shatalov4384" как пользователь "postgres".
+shatalov4384=# CREATE TABLE employees (
+shatalov4384(#     id INT PRIMARY KEY,
+shatalov4384(#     full_name VARCHAR(50) NOT NULL,
+shatalov4384(#     date_of_birth DATE NOT NULL,
+shatalov4384(#     start_date DATE NOT NULL,
+shatalov4384(#     position VARCHAR(50) NOT NULL,
+shatalov4384(#     employee_level ENUM('jun', 'middle', 'senior', 'lead') NOT NULL,
+shatalov4384(#     salary DECIMAL(10, 2) NOT NULL,
+shatalov4384(#     department_id INT NOT NULL,
+shatalov4384(#     has_rights BOOLEAN NOT NULL,
+shatalov4384(#     UNIQUE (id)
+shatalov4384(# );
+ОШИБКА:  тип "enum" не существует
+СТРОКА 7:     employee_level ENUM('jun', 'middle', 'senior', 'lead') N...
+                             ^
+shatalov4384=# CREATE TABLE employees (
+shatalov4384(#     employee_id SERIAL PRIMARY KEY,
+shatalov4384(#     full_name VARCHAR(100),
+shatalov4384(#     date_of_birth DATE,
+shatalov4384(#     start_date DATE,
+shatalov4384(#     position VARCHAR(100),
+shatalov4384(#     employee_level VARCHAR(10),
+shatalov4384(#     salary NUMERIC,
+shatalov4384(#     department_id INTEGER,
+shatalov4384(#     has_permission BOOLEAN
+shatalov4384(# );
+CREATE TABLE
+shatalov4384=# -- Создание таблицы отделов
+shatalov4384=# CREATE TABLE departments (
+shatalov4384(#     department_id SERIAL PRIMARY KEY,
+shatalov4384(#     department_name VARCHAR(100),
+shatalov4384(#     manager_name VARCHAR(100),
+shatalov4384(#     employee_count INTEGER
+shatalov4384(# );
+CREATE TABLE
+shatalov4384=# CREATE TABLE employee_ratings (
+shatalov4384(#     rating_id SERIAL PRIMARY KEY,
+shatalov4384(#     employee_id INTEGER,
+shatalov4384(#     quarter INTEGER,
+shatalov4384(#     rating CHAR(1)
+shatalov4384(# );
+CREATE TABLE
+shatalov4384=# INSERT INTO employees (full_name, date_of_birth, start_date, position, employee_level, salary, department_id, has_permission)
+shatalov4384-# VALUES
+shatalov4384-#     ('Иванов Иван Иванович', '1990-05-15', '2015-08-01', 'Менеджер', 'senior', 50000, 1, true),
+shatalov4384-#     ('Петров Петр Петрович', '1985-10-20', '2018-02-15', 'Разработчик', 'middle', 40000, 2, true),
+shatalov4384-#     ('Сидорова Ольга Петровна', '1993-12-10', '2019-06-10', 'Тестировщик', 'jun', 30000, 1, false),
+shatalov4384-#     ('Козлова Екатерина Сергеевна', '1987-03-25', '2020-01-20', 'Аналитик', 'senior', 60000, 2, true),
+shatalov4384-#     ('Морозов Артем Владимирович', '1995-08-30', '2021-04-05', 'Дизайнер', 'middle', 45000, 1, true),
+shatalov4384-#     ('Новиков Никита Дмитриевич', '1980-06-12', '2010-09-20', 'Руководитель проектов', 'lead', 80000, 3, true);
+INSERT 0 6
+shatalov4384=# INSERT INTO departments (department_name, manager_name, employee_count)
+shatalov4384-# VALUES
+shatalov4384-#     ('Отдел разработки', 'Иванов Иван Иванович', 10),
+shatalov4384-#     ('Отдел тестирования', 'Сидорова Ольга Петровна', 5),
+shatalov4384-#     ('Отдел управления проектами', 'Новиков Никита Дмитриевич', 7),
+shatalov4384-#     ('Отдел Интеллектуального анализа данных', 'Ким Юлия Владимировна', 3);
+INSERT 0 4
+shatalov4384=# INSERT INTO employee_ratings (employee_id, quarter, rating)
+shatalov4384-# VALUES
+shatalov4384-#     (1, 1, 'A'),
+shatalov4384-#     (1, 2, 'B'),
+shatalov4384-#     (1, 3, 'C'),
+shatalov4384-#     (1, 4, 'D'),
+shatalov4384-#     (2, 1, 'C'),
+shatalov4384-#     (2, 2, 'B'),
+shatalov4384-#     (2, 3, 'B'),
+shatalov4384-#     (2, 4, 'A'),
+shatalov4384-#     (3, 1, 'E'),
+shatalov4384-#     (3, 2, 'D'),
+shatalov4384-#     (3, 3, 'C'),
+shatalov4384-#     (3, 4, 'D'),
+shatalov4384-#     (4, 1, 'A'),
+shatalov4384-#     (4, 2, 'A'),
+shatalov4384-#     (4, 3, 'B'),
+shatalov4384-#     (4, 4, 'C'),
+shatalov4384-#     (5, 1, 'C'),
+shatalov4384-#     (5, 2, 'C'),
+shatalov4384-#     (5, 3, 'D'),
+shatalov4384-#     (5, 4, 'E'),
+shatalov4384-#     (6, 1, 'B'),
+shatalov4384-#     (6, 2, 'B'),
+shatalov4384-#     (6, 3, 'A'),
+shatalov4384-#     (6, 4, 'A');
+INSERT 0 24
+shatalov4384=# -- 6.1 Уникальный номер сотрудника, его ФИО и стаж работы – для всех сотрудников компании
+shatalov4384=# SELECT employee_id, full_name, AGE(CURRENT_DATE, start_date) AS experience
+shatalov4384-# FROM employees;
+ employee_id |          full_name          |       experience
+-------------+-----------------------------+-------------------------
+           1 | Иванов Иван Иванович        | 8 years 4 mons 2 days
+           2 | Петров Петр Петрович        | 5 years 9 mons 16 days
+           3 | Сидорова Ольга Петровна     | 4 years 5 mons 23 days
+           4 | Козлова Екатерина Сергеевна | 3 years 10 mons 14 days
+           5 | Морозов Артем Владимирович  | 2 years 7 mons 28 days
+           6 | Новиков Никита Дмитриевич   | 13 years 2 mons 13 days
+(6 ёЄЁюъ)
+
+
+shatalov4384=# SELECT employee_id, full_name, AGE(CURRENT_DATE, start_date) AS experience
+shatalov4384-# FROM employees
+shatalov4384-# ORDER BY start_date
+shatalov4384-# LIMIT 3;
+ employee_id |         full_name         |       experience
+-------------+---------------------------+-------------------------
+           6 | Новиков Никита Дмитриевич | 13 years 2 mons 13 days
+           1 | Иванов Иван Иванович      | 8 years 4 mons 2 days
+           2 | Петров Петр Петрович      | 5 years 9 mons 16 days
+(3 ёЄЁюъш)
+
+
+shatalov4384=# SELECT employee_id, full_name
+shatalov4384-# FROM employees
+shatalov4384-# WHERE position ILIKE '%водитель%';
+ employee_id |         full_name
+-------------+---------------------------
+           6 | Новиков Никита Дмитриевич
+(1 ёЄЁюър)
+
+
+shatalov4384=# SELECT DISTINCT er.employee_id, e.full_name
+shatalov4384-# FROM employee_ratings er
+shatalov4384-# JOIN employees e ON er.employee_id = e.employee_id
+shatalov4384-# WHERE er.rating IN ('D', 'E');
+ employee_id |         full_name
+-------------+----------------------------
+           1 | Иванов Иван Иванович
+           3 | Сидорова Ольга Петровна
+           5 | Морозов Артем Владимирович
+(3 ёЄЁюъш)
+
+
+shatalov4384=# SELECT MAX(salary) AS max_salary
+shatalov4384-# FROM employees;
+ max_salary
+------------
+      80000
+(1 ёЄЁюър)
+
+
+shatalov4384=# SELECT department_name
+shatalov4384-# FROM departments
+shatalov4384-# ORDER BY employee_count DESC
+shatalov4384-# LIMIT 1;
+ department_name
+------------------
+ Отдел разработки
+(1 ёЄЁюър)
+
+
+shatalov4384=# SELECT employee_id, full_name, start_date
+shatalov4384-# FROM employees
+shatalov4384-# ORDER BY start_date;
+ employee_id |          full_name          | start_date
+-------------+-----------------------------+------------
+           6 | Новиков Никита Дмитриевич   | 2010-09-20
+           1 | Иванов Иван Иванович        | 2015-08-01
+           2 | Петров Петр Петрович        | 2018-02-15
+           3 | Сидорова Ольга Петровна     | 2019-06-10
+           4 | Козлова Екатерина Сергеевна | 2020-01-20
+           5 | Морозов Артем Владимирович  | 2021-04-05
+(6 ёЄЁюъ)
+
+
+shatalov4384=# SELECT employee_level, AVG(salary) AS avg_salary
+shatalov4384-# FROM employees
+shatalov4384-# GROUP BY employee_level;
+ employee_level |     avg_salary
+----------------+--------------------
+ jun            | 30000.000000000000
+ lead           | 80000.000000000000
+ senior         | 55000.000000000000
+ middle         | 42500.000000000000
+(4 ёЄЁюъш)
+
+
+shatalov4384=# ALTER TABLE employees
+shatalov4384-# ADD COLUMN annual_bonus_coefficient NUMERIC;
+ALTER TABLE
+shatalov4384=#
+shatalov4384=# UPDATE employees
+shatalov4384-# SET annual_bonus_coefficient = 1.0; -- Установим базовое значение коэффициента 1.0
+UPDATE 6
+shatalov4384=#
+shatalov4384=# UPDATE employees
+shatalov4384-# SET annual_bonus_coefficient = CASE
+shatalov4384-#     WHEN EXISTS (SELECT * FROM employee_ratings WHERE employee_id = employees.employee_id AND rating = 'A') THEN annual_bonus_coefficient * 1.2
+shatalov4384-#     WHEN EXISTS (SELECT * FROM employee_ratings WHERE employee_id = employees.employee_id AND rating = 'B') THEN annual_bonus_coefficient * 1.1
+shatalov4384-#     WHEN EXISTS (SELECT * FROM employee_ratings WHERE employee_id = employees.employee_id AND rating = 'C') THEN annual_bonus_coefficient
+shatalov4384-#     WHEN EXISTS (SELECT * FROM employee_ratings WHERE employee_id = employees.employee_id AND rating = 'D') THEN annual_bonus_coefficient * 0.9
+shatalov4384-#     WHEN EXISTS (SELECT * FROM employee_ratings WHERE employee_id = employees.employee_id AND rating = 'E') THEN annual_bonus_coefficient * 0.8
+shatalov4384-#     ELSE annual_bonus_coefficient
+shatalov4384-# END;
+UPDATE 6
+shatalov4384=# SELECT full_name
+shatalov4384-# FROM employees
+shatalov4384-# WHERE salary = (SELECT MAX(salary) FROM employees);
+         full_name
+---------------------------
+ Новиков Никита Дмитриевич
+(1 ёЄЁюър)
+
+
+shatalov4384=# SELECT full_name
+shatalov4384-# FROM employees
+shatalov4384-# ORDER BY full_name;
+          full_name
+-----------------------------
+ Сидорова Ольга Петровна
+ Иванов Иван Иванович
+ Новиков Никита Дмитриевич
+ Козлова Екатерина Сергеевна
+ Морозов Артем Владимирович
+ Петров Петр Петрович
+(6 ёЄЁюъ)
+
+
+shatalov4384=# SELECT employee_level, AVG(EXTRACT(YEAR FROM (AGE(CURRENT_DATE, start_date)))) AS avg_experience_years
+shatalov4384-# FROM employees
+shatalov4384-# GROUP BY employee_level;
+ employee_level | avg_experience_years
+----------------+----------------------
+ jun            |   4.0000000000000000
+ lead           |  13.0000000000000000
+ senior         |   5.5000000000000000
+ middle         |   3.5000000000000000
+(4 ёЄЁюъш)
+
+
+shatalov4384=# SELECT e.full_name, d.department_name
+shatalov4384-# FROM employees e
+shatalov4384-# JOIN departments d ON e.department_id = d.department_id;
+          full_name          |      department_name
+-----------------------------+----------------------------
+ Иванов Иван Иванович        | Отдел разработки
+ Петров Петр Петрович        | Отдел тестирования
+ Сидорова Ольга Петровна     | Отдел разработки
+ Козлова Екатерина Сергеевна | Отдел тестирования
+ Морозов Артем Владимирович  | Отдел разработки
+ Новиков Никита Дмитриевич   | Отдел управления проектами
+(6 ёЄЁюъ)
+
+
+shatalov4384=# SELECT d.department_name, e.full_name, e.salary
+shatalov4384-# FROM employees e
+shatalov4384-# JOIN departments d ON e.department_id = d.department_id
+shatalov4384-# WHERE (e.department_id, e.salary) IN (SELECT department_id, MAX(salary) FROM employees GROUP BY department_id);
+      department_name       |          full_name          | salary
+----------------------------+-----------------------------+--------
+ Отдел разработки           | Иванов Иван Иванович        |  50000
+ Отдел тестирования         | Козлова Екатерина Сергеевна |  60000
+ Отдел управления проектами | Новиков Никита Дмитриевич   |  80000
+(3 ёЄЁюъш)
+
+
+shatalov4384=# SELECT d.department_name
+shatalov4384-# FROM employees e
+shatalov4384-# JOIN departments d ON e.department_id = d.department_id
+shatalov4384-# GROUP BY d.department_name
+shatalov4384-# ORDER BY SUM(e.salary * e.annual_bonus_coefficient) DESC
+shatalov4384-# LIMIT 1;
+ department_name
+------------------
+ Отдел разработки
+(1 ёЄЁюър)
